@@ -8,7 +8,8 @@ const app = express();
 app.use(cors()); 
 app.use(express.json());
 
-const dbPath = path.join(__dirname, 'transactionManagement.db');
+const PORT = process.env.PORT || 8081;
+const dbPath = process.env.DB_PATH || path.join(__dirname, 'transactionManagement.db');
 let db = null;
 
 // Initialize DB and Server
@@ -28,6 +29,13 @@ const initializeDbAndServer = async () => {
 };
 initializeDbAndServer();
 
+process.on('SIGINT', async () => {
+    if (db) {
+        await db.close();
+        console.log('Database connection closed.');
+    }
+    process.exit(0);
+});
 
 app.get('/api/transactions/', async (req, res) => {
   const { user_id } = req.query; // Get query parameter
