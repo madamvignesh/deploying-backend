@@ -3,10 +3,25 @@ const { open } = require('sqlite');
 const cors = require('cors')
 const sqlite3 = require('sqlite3');
 const path = require('path');
+const session = require("express-session");
 
 const app = express();
 app.use(cors()); 
 app.use(express.json());
+
+app.use(
+  session({
+    secret: "your-secret-key", // Replace with a secure secret
+    resave: false,
+    saveUninitialized: true,
+    cookie: {
+      sameSite: "none",
+      secure: true, // Works only over HTTPS
+      httpOnly: true,
+    },
+  })
+);
+
 
 const dbPath = path.join(__dirname, 'transactionManagement.db');
 let db = null;
